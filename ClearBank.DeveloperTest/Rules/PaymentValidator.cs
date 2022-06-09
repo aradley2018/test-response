@@ -14,22 +14,18 @@ namespace ClearBank.DeveloperTest.Rules
                 return false;
             }
 
-            if (request.PaymentScheme == PaymentScheme.Bacs && account.AllowedPaymentSchemes.HasFlag(AllowedPaymentSchemes.Bacs))
+            if (!account.AllowedPaymentSchemes.HasFlag(request.PaymentScheme))
             {
-                return new BacsPaymentValidator().Validate(request,account);
+                return false;
             }
 
-            if (request.PaymentScheme == PaymentScheme.Chaps && account.AllowedPaymentSchemes.HasFlag(AllowedPaymentSchemes.Chaps))
+            return request.PaymentScheme switch
             {
-                return new ChapsPaymentValidator().Validate(request, account);
-            }
-
-            if (request.PaymentScheme == PaymentScheme.FasterPayments && account.AllowedPaymentSchemes.HasFlag(AllowedPaymentSchemes.FasterPayments))
-            {
-                return new FasterPaymentsPaymentValidator().Validate(request, account);
-            }
-
-            return false;
+                PaymentScheme.Bacs => new BacsPaymentValidator().Validate(request, account),
+                PaymentScheme.Chaps => new ChapsPaymentValidator().Validate(request, account),
+                PaymentScheme.FasterPayments => new FasterPaymentsPaymentValidator().Validate(request, account),
+                _ => false
+            };
         }
     }
 }

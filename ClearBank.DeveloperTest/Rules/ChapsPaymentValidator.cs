@@ -9,12 +9,12 @@ namespace ClearBank.DeveloperTest.Rules
     {
         public bool Validate(MakePaymentRequest request, Account account)
         {
-                if (account.Status != AccountStatus.Live)
-                {
-                    return false;
-                }
+            if (account.Status != AccountStatus.Live)
+            {
+                return false;
+            }
 
-                return true;
+            return true;
         }
     }
 }

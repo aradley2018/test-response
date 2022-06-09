@@ -9,16 +9,7 @@ namespace ClearBank.DeveloperTest.Rules
     {
         public bool Validate(MakePaymentRequest request, Account account)
         {
-                if (account == null)
-                {
-                    return false;
-                }
-                else if (!account.AllowedPaymentSchemes.HasFlag(AllowedPaymentSchemes.Bacs))
-                {
-                    return false;
-                }
-
-                return true;
+            return true;
         }
     }
 }

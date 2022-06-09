@@ -15,7 +15,7 @@ namespace ClearBank.DeveloperTest.Tests.Mocks
                 var acc = new Account
                 {
                     AccountNumber = "AllSchemesLive",
-                    AllowedPaymentSchemes = AllowedPaymentSchemes.FasterPayments | AllowedPaymentSchemes.Bacs | AllowedPaymentSchemes.Chaps,
+                    AllowedPaymentSchemes = PaymentScheme.FasterPayments | PaymentScheme.Bacs | PaymentScheme.Chaps,
                     Balance = 100,
                     Status = AccountStatus.Live
                 };
@@ -27,7 +27,7 @@ namespace ClearBank.DeveloperTest.Tests.Mocks
                 var acc = new Account
                 {
                     AccountNumber = "ChapsNotLive",
-                    AllowedPaymentSchemes = AllowedPaymentSchemes.Chaps,
+                    AllowedPaymentSchemes = PaymentScheme.Chaps,
                     Status = AccountStatus.Disabled,
                 };
                 return acc;
@@ -38,7 +38,7 @@ namespace ClearBank.DeveloperTest.Tests.Mocks
                 var acc = new Account
                 {
                     AccountNumber = "FP",
-                    AllowedPaymentSchemes = AllowedPaymentSchemes.FasterPayments,
+                    AllowedPaymentSchemes = PaymentScheme.FasterPayments,
                     Balance = 100
                 };
                 return acc;
