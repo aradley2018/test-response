@@ -11,7 +11,7 @@ namespace ClearBank.DeveloperTest.Services.Tests
     [TestClass()]
     public class PaymentServiceTests
     {
-        PaymentService service = new PaymentService(new AccountStoreFactoryMock());
+        PaymentService service = new PaymentService(new AccountStoreFactoryMock(), new PaymentConfigMock());
         MakePaymentRequest request = new MakePaymentRequest() 
             {
                 DebtorAccountNumber = "AllSchemesLive" //Balance = 100

@@ -6,28 +6,29 @@ namespace ClearBank.DeveloperTest.Services
 {
     public class PaymentService : IPaymentService
     {
-        private PaymentUtils _utils;
-        public PaymentService(IAccountStoreFactory accountStoreFactory)
+        private readonly IAccountStoreFactory _accountStoreFactory;
+        private readonly IPaymentConfig _paymentConfig;
+
+        public PaymentService(IAccountStoreFactory accountStoreFactory, IPaymentConfig paymentConfig)
         {
-            _utils = new PaymentUtils(accountStoreFactory);
-        }
-        public PaymentService()
-        {
-            _utils = new PaymentUtils(null);
+            _accountStoreFactory = accountStoreFactory;
+            _paymentConfig = paymentConfig;
         }
 
         public MakePaymentResult MakePayment(MakePaymentRequest request)
         {
-            Account account = _utils.GetAccount(request.DebtorAccountNumber);
+            var store = _accountStoreFactory.GetAccountStore(_paymentConfig.GetAccountStoreType());
 
-            var result = new MakePaymentResult();
-            result.Success = PaymentValidator.Validate(request, account);
+            var account = store.GetAccount(request.DebtorAccountNumber);
 
-            if (result.Success)
+            var result = new MakePaymentResult
             {
-                account.Balance -= request.Amount;
-                _utils.UpdateAccount(account);                
-            }
+                Success = PaymentValidator.Validate(request, account)
+            };
+
+            if (!result.Success) return result;
+            account.Balance -= request.Amount;
+            store.UpdateAccount(account);
 
             return result;
         }
