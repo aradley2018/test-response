@@ -11,34 +11,67 @@ namespace ClearBank.DeveloperTest.Services.Tests
     [TestClass()]
     public class PaymentServiceTests
     {
+        PaymentService service = new PaymentService(new AccountStoreFactoryMock());
+        MakePaymentRequest request = new MakePaymentRequest() 
+            {
+                DebtorAccountNumber = "AllSchemesLive" //Balance = 100
+            };
+
+        [TestMethod()]
+        public void givenAccountUnspecified_whenBacs_thenFailure()
+        {
+            request.PaymentScheme = PaymentScheme.Bacs;
+            request.DebtorAccountNumber = "NA";
+            var result = service.MakePayment(request);
+            Assert.IsFalse(result.Success);
+        }
+
+        [TestMethod()]
+        public void givenAccountFpOnly_whenBacs_thenFailure()
+        {
+            request.PaymentScheme = PaymentScheme.Bacs;
+            request.DebtorAccountNumber = "FP";
+
+            var result = service.MakePayment(request);
+            Assert.IsFalse(result.Success);
+        }
+
         [TestMethod()]
         public void givenAccountWithFunds_whenFasterPayment_thenSuccess()
         {
-            // Arange
-            var service = new PaymentService(new AccountStoreFactoryMock());
-            var request = new MakePaymentRequest();
-            request.DebtorAccountNumber = "ukfp-123";
             request.PaymentScheme = PaymentScheme.FasterPayments;
             request.Amount = 50;
-
-            // Act
+            
             var result = service.MakePayment(request);
-
-            // Asert
             Assert.IsTrue(result.Success);
         }
 
         [TestMethod()]
-        public void givenUnspecifiedAccount_whenBacsPayment_thenFailure()
+        public void givenAccountWithoutFunds_whenFasterPayment_thenFailure()
         {
-            // Arange
-            var service = new PaymentService();
-            var request = new MakePaymentRequest();
+            request.PaymentScheme = PaymentScheme.FasterPayments;
+            request.Amount = 101;
 
-            // Act
             var result = service.MakePayment(request);
+            Assert.IsFalse(result.Success);
+        }
 
-            // Asert
+        [TestMethod()]
+        public void givenAccountLive_whenChaps_thenSuccess()
+        {
+            request.PaymentScheme = PaymentScheme.Chaps;
+            
+            var result = service.MakePayment(request);
+            Assert.IsTrue(result.Success);
+        }
+
+        [TestMethod()]
+        public void givenAccountNotLive_whenChaps_thenFailure()
+        {
+            request.PaymentScheme = PaymentScheme.Chaps;
+            request.DebtorAccountNumber = "ChapsNotLive";
+
+            var result = service.MakePayment(request);
             Assert.IsFalse(result.Success);
         }
     }

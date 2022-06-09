@@ -10,14 +10,40 @@ namespace ClearBank.DeveloperTest.Tests.Mocks
     {
         Account IAccountStore.GetAccount(string accountNumber)
         {
-            if (accountNumber == "ukfp-123")
+            if (accountNumber == "AllSchemesLive")
             {
-                Account acc = new Account();
-                acc.AccountNumber = "ukfp-123";
-                acc.AllowedPaymentSchemes = AllowedPaymentSchemes.FasterPayments;
-                acc.Balance = 100;
+                var acc = new Account
+                {
+                    AccountNumber = "AllSchemesLive",
+                    AllowedPaymentSchemes = AllowedPaymentSchemes.FasterPayments | AllowedPaymentSchemes.Bacs | AllowedPaymentSchemes.Chaps,
+                    Balance = 100,
+                    Status = AccountStatus.Live
+                };
                 return acc;
             }
+
+            if (accountNumber == "ChapsNotLive")
+            {
+                var acc = new Account
+                {
+                    AccountNumber = "ChapsNotLive",
+                    AllowedPaymentSchemes = AllowedPaymentSchemes.Chaps,
+                    Status = AccountStatus.Disabled,
+                };
+                return acc;
+            }
+
+            if (accountNumber == "FP")
+            {
+                var acc = new Account
+                {
+                    AccountNumber = "FP",
+                    AllowedPaymentSchemes = AllowedPaymentSchemes.FasterPayments,
+                    Balance = 100
+                };
+                return acc;
+            }
+
             return null;
         }
 
