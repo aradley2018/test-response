@@ -76,5 +76,14 @@ namespace ClearBank.DeveloperTest.Services.Tests
             var result = _service.MakePayment(_request);
             Assert.IsFalse(result.Success);
         }
+
+        // todo
+        // but should have added these tests with the static method validation refactoring
+        [TestMethod()]
+        public void givenAccountLive_whenChaps_whenValidationSuccessfull_thenAccountIsSaved()
+        {
+            //mock validation to return true/false
+            //BDD-style tests to check expected methods are called on the store mock 
+        }
     }
 }

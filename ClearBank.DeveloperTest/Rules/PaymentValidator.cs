@@ -24,7 +24,7 @@ namespace ClearBank.DeveloperTest.Rules
                 PaymentScheme.Bacs => new BacsPaymentValidator().Validate(request, account),
                 PaymentScheme.Chaps => new ChapsPaymentValidator().Validate(request, account),
                 PaymentScheme.FasterPayments => new FasterPaymentsPaymentValidator().Validate(request, account),
-                _ => false
+                _ => throw new NotImplementedException("Unknown request PaymentScheme " + request.PaymentScheme)
             };
         }
     }
