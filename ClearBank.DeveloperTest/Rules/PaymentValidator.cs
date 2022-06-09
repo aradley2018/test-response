@@ -5,56 +5,31 @@ using System.Text;
 
 namespace ClearBank.DeveloperTest.Rules
 {
-    public class PaymentValidator
+    public class PaymentValidator : IPaymentValidator
     {
-        public static bool Validate(MakePaymentRequest request, Account account)
+        public bool Validate(MakePaymentRequest request, Account account)
         {
-            bool valid = true;
-            if (request.PaymentScheme == PaymentScheme.Bacs)
+            if (account == null)
             {
-                if (account == null)
-                {
-                    valid = false;
-                }
-                else if (!account.AllowedPaymentSchemes.HasFlag(AllowedPaymentSchemes.Bacs))
-                {
-                    valid = false;
-                }
+                return false;
             }
 
-            if (request.PaymentScheme == PaymentScheme.Chaps)
+            if (request.PaymentScheme == PaymentScheme.Bacs && account.AllowedPaymentSchemes.HasFlag(AllowedPaymentSchemes.Bacs))
             {
-                if (account == null)
-                {
-                    valid = false;
-                }
-                else if (!account.AllowedPaymentSchemes.HasFlag(AllowedPaymentSchemes.Chaps))
-                {
-                    valid = false;
-                }
-                else if (account.Status != AccountStatus.Live)
-                {
-                    valid = false;
-                }
+                return new BacsPaymentValidator().Validate(request,account);
             }
 
-            if (request.PaymentScheme == PaymentScheme.FasterPayments)
+            if (request.PaymentScheme == PaymentScheme.Chaps && account.AllowedPaymentSchemes.HasFlag(AllowedPaymentSchemes.Chaps))
             {
-                if (account == null)
-                {
-                    valid = false;
-                }
-                else if (!account.AllowedPaymentSchemes.HasFlag(AllowedPaymentSchemes.FasterPayments))
-                {
-                    valid = false;
-                }
-                else if (account.Balance < request.Amount)
-                {
-                    valid = false;
-                }
+                return new ChapsPaymentValidator().Validate(request, account);
             }
 
-            return valid;
+            if (request.PaymentScheme == PaymentScheme.FasterPayments && account.AllowedPaymentSchemes.HasFlag(AllowedPaymentSchemes.FasterPayments))
+            {
+                return new FasterPaymentsPaymentValidator().Validate(request, account);
+            }
+
+            return false;
         }
     }
 }

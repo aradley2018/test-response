@@ -7,11 +7,13 @@ namespace ClearBank.DeveloperTest.Services
     public class PaymentService : IPaymentService
     {
         private readonly IAccountStoreFactory _accountStoreFactory;
+        private readonly IPaymentValidator _paymentValidator;
         private readonly IPaymentConfig _paymentConfig;
 
-        public PaymentService(IAccountStoreFactory accountStoreFactory, IPaymentConfig paymentConfig)
+        public PaymentService(IAccountStoreFactory accountStoreFactory, IPaymentValidator paymentValidator, IPaymentConfig paymentConfig)
         {
             _accountStoreFactory = accountStoreFactory;
+            _paymentValidator = paymentValidator;
             _paymentConfig = paymentConfig;
         }
 
@@ -23,12 +25,14 @@ namespace ClearBank.DeveloperTest.Services
 
             var result = new MakePaymentResult
             {
-                Success = PaymentValidator.Validate(request, account)
+                Success = _paymentValidator.Validate(request, account)
             };
 
-            if (!result.Success) return result;
-            account.Balance -= request.Amount;
-            store.UpdateAccount(account);
+            if (result.Success)
+            {
+                account.Balance -= request.Amount;
+                store.UpdateAccount(account);
+            }
 
             return result;
         }

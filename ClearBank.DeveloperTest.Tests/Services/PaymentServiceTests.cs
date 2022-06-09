@@ -3,6 +3,7 @@ using ClearBank.DeveloperTest.Services;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ClearBank.DeveloperTest.Rules;
 using ClearBank.DeveloperTest.Types;
 using ClearBank.DeveloperTest.Tests.Mocks;
 
@@ -11,8 +12,9 @@ namespace ClearBank.DeveloperTest.Services.Tests
     [TestClass()]
     public class PaymentServiceTests
     {
-        PaymentService service = new PaymentService(new AccountStoreFactoryMock(), new PaymentConfigMock());
-        MakePaymentRequest request = new MakePaymentRequest() 
+        readonly PaymentService _service = new PaymentService(new AccountStoreFactoryMock(), new PaymentValidator(), new PaymentConfigMock());
+
+        readonly MakePaymentRequest _request = new MakePaymentRequest() 
             {
                 DebtorAccountNumber = "AllSchemesLive" //Balance = 100
             };
@@ -20,58 +22,58 @@ namespace ClearBank.DeveloperTest.Services.Tests
         [TestMethod()]
         public void givenAccountUnspecified_whenBacs_thenFailure()
         {
-            request.PaymentScheme = PaymentScheme.Bacs;
-            request.DebtorAccountNumber = "NA";
-            var result = service.MakePayment(request);
+            _request.PaymentScheme = PaymentScheme.Bacs;
+            _request.DebtorAccountNumber = "NA";
+            var result = _service.MakePayment(_request);
             Assert.IsFalse(result.Success);
         }
 
         [TestMethod()]
         public void givenAccountFpOnly_whenBacs_thenFailure()
         {
-            request.PaymentScheme = PaymentScheme.Bacs;
-            request.DebtorAccountNumber = "FP";
+            _request.PaymentScheme = PaymentScheme.Bacs;
+            _request.DebtorAccountNumber = "FP";
 
-            var result = service.MakePayment(request);
+            var result = _service.MakePayment(_request);
             Assert.IsFalse(result.Success);
         }
 
         [TestMethod()]
         public void givenAccountWithFunds_whenFasterPayment_thenSuccess()
         {
-            request.PaymentScheme = PaymentScheme.FasterPayments;
-            request.Amount = 50;
+            _request.PaymentScheme = PaymentScheme.FasterPayments;
+            _request.Amount = 50;
             
-            var result = service.MakePayment(request);
+            var result = _service.MakePayment(_request);
             Assert.IsTrue(result.Success);
         }
 
         [TestMethod()]
         public void givenAccountWithoutFunds_whenFasterPayment_thenFailure()
         {
-            request.PaymentScheme = PaymentScheme.FasterPayments;
-            request.Amount = 101;
+            _request.PaymentScheme = PaymentScheme.FasterPayments;
+            _request.Amount = 101;
 
-            var result = service.MakePayment(request);
+            var result = _service.MakePayment(_request);
             Assert.IsFalse(result.Success);
         }
 
         [TestMethod()]
         public void givenAccountLive_whenChaps_thenSuccess()
         {
-            request.PaymentScheme = PaymentScheme.Chaps;
+            _request.PaymentScheme = PaymentScheme.Chaps;
             
-            var result = service.MakePayment(request);
+            var result = _service.MakePayment(_request);
             Assert.IsTrue(result.Success);
         }
 
         [TestMethod()]
         public void givenAccountNotLive_whenChaps_thenFailure()
         {
-            request.PaymentScheme = PaymentScheme.Chaps;
-            request.DebtorAccountNumber = "ChapsNotLive";
+            _request.PaymentScheme = PaymentScheme.Chaps;
+            _request.DebtorAccountNumber = "ChapsNotLive";
 
-            var result = service.MakePayment(request);
+            var result = _service.MakePayment(_request);
             Assert.IsFalse(result.Success);
         }
     }
